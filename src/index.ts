@@ -1,3 +1,4 @@
+import '../index.css';
 import * as THREE from 'three';
 import { Scene } from './Scene';
 import { Player } from './Player';

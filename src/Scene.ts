@@ -21,7 +21,7 @@ export class Scene extends THREE.Scene implements iScene {
   private light: THREE.DirectionalLight = new THREE.DirectionalLight(0xffffff, 1);  
   private helperLight: THREE.AmbientLight = new THREE.AmbientLight(0xffffff, 1);
 
-  private helperCamera = new THREE.CameraHelper(this.light.shadow.camera);
+  //private helperCamera = new THREE.CameraHelper(this.light.shadow.camera);
 
   private plane: THREE.Mesh = new THREE.Mesh();
 
@@ -58,7 +58,6 @@ export class Scene extends THREE.Scene implements iScene {
   /**
    * adding helpers to visualize where in-game lighting and hitboxes are in the scene
    * Optional Method, does not affect any functionality
-   */
   private addHelpers(): void {
     const lightHelper = new THREE.DirectionalLightHelper(this.light, 5, 0x0000ff);
     this.add(lightHelper);
@@ -75,6 +74,7 @@ export class Scene extends THREE.Scene implements iScene {
     const endingPlatformHelper = new THREE.Box3Helper( this._endingPlatform );
     this.add(endingPlatformHelper);
   }
+ */
 
   /**
    * intializing all of the parts of the scene

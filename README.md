@@ -1,28 +1,43 @@
-# Ian's Parkour Game Made with Three.js
+# 3D Parkour Game
 
-## Overview
-Run and Jump through a cartoon fantasy world to make it from one house to
-another!
+An interactive 3D web-based parkour game built with Three.js featuring real-time physics simulation and dynamic lighting.
 
-## Getting Started
+## Tech Stack
 
-Clone this repository with git and run:
+**Frontend:** React, TypeScript  
+**3D Graphics:** Three.js  
+**Physics:** Custom collision detection system  
+**Styling:** CSS3  
 
+## Installation
+
+1. Clone the repository
+```bash
+git clone https://github.com/ian-yeh/3d-parkour-game.git
+cd 3d-parkour-game
 ```
+
+2. Install dependencies
+```bash
 npm install
-npm run dev
 ```
 
-Then go to http://localhost:3000
+3. Start the development server
+```bash
+npm start
+```
 
-This repository was bootstrapped with [Vite.js](https://vitejs.dev/).
+4. Open your browser and navigate to `http://localhost:3000`
 
-## Resources
-3D assets are from [SketchFab](https://sketchfab.com/3d-models).
+## Controls
 
-Cartoon Building [here](https://sketchfab.com/3d-models/cartoon-building-f5a4e7feb7794eb98018de8d49a0939b).\
-Cartoon Log [here](https://sketchfab.com/3d-models/cartoon-fallen-tree-85be5e12759d460cb5f1f0d7a4c109b6).\
-Cartoon Log [here](https://sketchfab.com/3d-models/cartoon-tree-ebd34b4c54f74b5a934ca70b961a3cf8).\
-Cartoon House [here](https://sketchfab.com/3d-models/cat-house-3ccdeded08134525acfa5b59a734a6d3).
+- **WASD** or **Arrow Keys**: Move character
+- **Space**: Jump
+- **Mouse**: Look around (first-person view)
+- **Shift**: Run/Sprint
 
-Favicon [here](https://thenounproject.com/icon/rice-bowl-317656/).
+## Live Demo
+
+[Play the game here](your-deployed-url)
+
+Built by [Ian Yeh](https://github.com/ian-yeh)

@@ -38,6 +38,6 @@ npm start
 
 ## Live Demo
 
-[Play the game here](your-deployed-url)
+[Play the game here](https://threejs-parkour-pmle.vercel.app/)
 
 Built by [Ian Yeh](https://github.com/ian-yeh)

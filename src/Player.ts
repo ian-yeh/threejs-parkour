@@ -9,8 +9,12 @@ interface iPlayer {
 }
 
 export class Player implements iPlayer {
-  /** @type {boolean} checks if the player is already in the air or not */
   private _canJump: boolean = true;
+  private _coyoteTimer: number = 0;
+  private _jumpBufferTimer: number = 0;
+  private readonly COYOTE_TIME = 0.12;
+  private readonly JUMP_BUFFER_TIME = 0.12;
+  private readonly EYE_HEIGHT = 1.6;
 
   /** @type {THREE.PerspectiveCamera} the camera that the player uses to look around the scene */
   private _camera: THREE.PerspectiveCamera;
@@ -39,9 +43,9 @@ export class Player implements iPlayer {
     private height: number,
   ) {
     this._camera = new THREE.PerspectiveCamera( 75, this.width / this.height, 0.1, 1000 );
-    this._camera.position.set(4, 1, 10);
+    this._camera.position.set(4, this.EYE_HEIGHT, 10);
 
-    this._raycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, -1, 0), 0, 10);
+    this._raycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, -1, 0), 0, 2.0);
   }
 
   /**
@@ -73,32 +77,46 @@ export class Player implements iPlayer {
 
       if (controller.fwd || controller.bwd) this.velocity.z -= this.direction.z * 225.0 * delta;
       if (controller.left || controller.right) this.velocity.x -= this.direction.x * 225.0 * delta;
-      if (controller.jump) {
-        if (this._canJump) this.velocity.y = 60.0;
-        this._canJump = false;
-      }
+
+      // jump buffer: remember the press for a short window
+      if (controller.jump) this._jumpBufferTimer = this.JUMP_BUFFER_TIME;
+      else this._jumpBufferTimer = Math.max(0, this._jumpBufferTimer - delta);
 
       controller.controls.moveRight(-this.velocity.x * delta);
       controller.controls.moveForward(-this.velocity.z * delta);
 
-      //raycaster and collision initializations
+      // raycaster runs before Y update so gravity can't nudge the player below the surface
+      // between the check and the snap
       this._raycaster.ray.origin.copy(controller.controls.getObject().position);
-
       const intersections = this._raycaster.intersectObjects(scene.getObjects, false);
-      if (intersections.length) {
-        this.velocity.y = Math.max(0, this.velocity.y);
+
+      if (intersections.length > 0 && this.velocity.y <= 0) {
+        // snap camera to eye height above the surface
+        controller.controls.getObject().position.y = intersections[0].point.y + this.EYE_HEIGHT;
+        this.velocity.y = 0;
         this._canJump = true;
+        this._coyoteTimer = this.COYOTE_TIME;
+      } else if (intersections.length === 0) {
+        this._coyoteTimer = Math.max(0, this._coyoteTimer - delta);
       }
 
-      // updating the player y position
+      // fire jump if buffer is active and coyote time hasn't expired
+      if (this._jumpBufferTimer > 0 && this._coyoteTimer > 0) {
+        this.velocity.y = 60.0;
+        this._canJump = false;
+        this._coyoteTimer = 0;
+        this._jumpBufferTimer = 0;
+      }
+
+      // apply Y movement after snap so the snap position is the baseline
       controller.controls.getObject().position.y += (this.velocity.y * delta);
 
-      // if the player is on the ground, make the velocity 0
-      if (controller.controls.getObject().position.y <= 0) {
+      // absolute floor
+      if (controller.controls.getObject().position.y <= this.EYE_HEIGHT) {
         this.velocity.y = 0;
-        controller.controls.getObject().position.y = 0;
-
+        controller.controls.getObject().position.y = this.EYE_HEIGHT;
         this._canJump = true;
+        this._coyoteTimer = this.COYOTE_TIME;
       }
 
     }
@@ -194,7 +212,8 @@ export class Player implements iPlayer {
    */
   private updatePlayerHitBox(): void {
     const cameraPosition: THREE.Vector3 = this._camera.position.clone();
-    cameraPosition.y += this._hitBoxSize.y/2;
+    // center hitbox at mid-body; feet are EYE_HEIGHT below the camera
+    cameraPosition.y += this._hitBoxSize.y / 2 - this.EYE_HEIGHT;
     this._hitBox.setFromCenterAndSize(cameraPosition, this._hitBoxSize);
   }
 
